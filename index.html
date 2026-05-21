@@ -600,6 +600,30 @@
             }).catch(e => console.log('数据提交失败', e));
             // ========== 结束静默提交 ==========
     
+             // ========== 🆕 飞书群机器人推送（方案一）==========
+            const webhookUrl = 'https://open.feishu.cn/open-apis/bot/v2/hook/77529071-4a63-4070-b390-13ac84e14b57'; // ⚠️ 替换成你的真实地址
+            let sessionId = sessionStorage.getItem('submitted_session');
+            if (!sessionId) {
+                sessionId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                sessionStorage.setItem('submitted_session', sessionId);
+            }
+            // 组装消息内容（纯文本，简洁版）
+            const messageText = `📊 肠格测试完成
+            🆔 SessionID: ${sessionId}
+            🔰 最终肠格: ${finalCode}
+            🛡️ 耐受度: ${rawScores[0]} 分（G强韧 ⇄ S娇嫩）
+            🥗 营养供给: ${rawScores[1]} 分（N内源自给 ⇄ A外补依赖）
+            ⏰ 节律: ${rawScores[2]} 分（T规律 ⇄ U紊乱）
+            🧱 屏障: ${rawScores[3]} 分（I稳固 ⇄ D受损）`;
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    msg_type: 'text',
+                    content: { text: messageText }
+                })
+            }).catch(err => console.log('飞书推送失败', err));
+
             
             testSection.classList.add('hidden');
             resultSection.classList.remove('hidden');
